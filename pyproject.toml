@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orgecc-command-mock"
+version = "0.1.0"
+authors = [{ name = "Hug SCM Team" }]
+description = "High-fidelity command mocking framework"
+requires-python = ">=3.8"
+dependencies = [
+    "tomli>=2.0.0; python_version < '3.11'",
+    "tomli-w>=1.0.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

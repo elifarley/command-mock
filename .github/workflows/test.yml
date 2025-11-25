@@ -1,0 +1,92 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: command-mock-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # default make target used by the job; override at workflow dispatch or in job in PR comments
+  MAKE_TARGET: ci
+  # change this to run a different make target in the job: e.g. MAKE_TARGET=test
+  PIP_CACHE_DIR: ~/.cache/pip
+
+jobs:
+  ci:
+    name: CI (Makefile-driven)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: [3.12, 3.13]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Cache mypy/ruff caches
+        uses: actions/cache@v4
+        id: cache-mypy-ruff
+        with:
+          # include python version so caches are separate between interpreters
+          path: |
+            .mypy_cache
+            .ruff_cache
+            htmlcov
+          key: ${{ runner.os }}-mypy-ruff-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-mypy-ruff-${{ matrix.python-version }}-
+            ${{ runner.os }}-mypy-ruff-
+
+      - name: Install build & dev dependencies
+        # Keep this step hermetic and simple: install editable package with dev extras
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          make install
+        # If your project needs additional build steps (e.g. C extensions) add them here.
+
+      - name: Show environment (quick debug)
+        run: |
+          python --version
+          pip --version
+          pip list --format=columns | sed -n '1,200p'
+          echo "Make target: ${MAKE_TARGET}"
+
+      - name: Run CI pipeline (Makefile)
+        # Use MAKE_TARGET env to run the aggregate CI target from your Makefile
+        run: |
+          set -eo pipefail
+          mkdir -p reports
+          # run the Makefile target (defaults to 'ci')
+          # Pass ARGS to generate junit xml during the test phase
+          make ${MAKE_TARGET} ARGS="--junitxml=reports/junit.xml"
+        env:
+          MAKE_TARGET: ${{ env.MAKE_TARGET }}
+
+      - name: Upload coverage HTML (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-${{ matrix.python-version }}
+          path: htmlcov
+
+      - name: Upload pytest junit xml (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-junit-${{ matrix.python-version }}
+          path: reports/junit.xml
