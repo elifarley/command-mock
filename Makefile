@@ -132,7 +132,7 @@ coverage-open:
 version v: ## Show current project version
 	@$(PYTHON_CMD) -m setuptools_scm
 
-release: ## Create and push a new release tag
+release: version ## Create and push a new release tag
 	@chmod +x scripts/release.sh
 	@./scripts/release.sh $(V)
 
