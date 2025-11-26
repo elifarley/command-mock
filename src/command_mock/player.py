@@ -121,7 +121,9 @@ class CommandMockPlayer:
         self._scenario_cache[mock_file] = scenarios
         return scenarios
 
-    def get_scenario(self, mock_file: str, scenario_name: str = "basic") -> Dict[str, Any]:
+    def get_scenario(
+        self, mock_file: str, scenario_name: str = "basic"
+    ) -> Dict[str, Any]:
         """
         Get a specific scenario from a mock file.
 
@@ -146,10 +148,7 @@ class CommandMockPlayer:
         return scenarios[scenario_name]
 
     def command_matches(
-        self,
-        actual_cmd: List[str],
-        template_cmd: str,
-        strict: bool = False
+        self, actual_cmd: List[str], template_cmd: str, strict: bool = False
     ) -> bool:
         """
         Check if actual command matches template command with flexible placeholder matching.
@@ -220,7 +219,6 @@ class CommandMockPlayer:
         if has_placeholders and not strict:
             # Match each template part against actual command
             template_idx = 0
-            actual_idx = 0
 
             while template_idx < len(template_parts):
                 template_part = template_parts[template_idx]
@@ -274,7 +272,7 @@ class CommandMockPlayer:
         if "--since" in actual_cmd:
             since_index = actual_cmd.index("--since")
             # Remove --since and its value
-            actual_to_match = actual_cmd[:since_index] + actual_cmd[since_index+2:]
+            actual_to_match = actual_cmd[:since_index] + actual_cmd[since_index + 2 :]
 
         # Exact matching (with placeholder support)
         if len(actual_to_match) != len(template_parts):
@@ -301,7 +299,7 @@ class CommandMockPlayer:
         self,
         mock_file: str,
         scenario_name: str = "basic",
-        fallback_scenarios: Optional[List[str]] = None
+        fallback_scenarios: Optional[List[str]] = None,
     ) -> Callable:
         """
         Get a mock function for subprocess.run based on scenario.
@@ -345,16 +343,17 @@ class CommandMockPlayer:
                     result = MagicMock(
                         stdout=scen.get("stdout", ""),
                         stderr=scen.get("stderr", ""),
-                        returncode=scen.get("returncode", 0)
+                        returncode=scen.get("returncode", 0),
                     )
                     # If returncode is non-zero and check=True, raise CalledProcessError
                     if scen.get("returncode", 0) != 0 and kwargs.get("check", False):
                         import subprocess
+
                         raise subprocess.CalledProcessError(
                             returncode=scen.get("returncode", 0),
                             cmd=cmd,
                             output=scen.get("stdout", ""),
-                            stderr=scen.get("stderr", "")
+                            stderr=scen.get("stderr", ""),
                         )
                     # If returncode is non-zero and check=False, still return result with error
                     # This allows json_transform.py to catch the error via result.returncode check
@@ -364,15 +363,12 @@ class CommandMockPlayer:
             return MagicMock(
                 stdout="",
                 stderr=f"Mock not found for command: {' '.join(cmd)}",
-                returncode=1
+                returncode=1,
             )
 
         return mock_subprocess_run
 
-    def get_multi_scenario_mock(
-        self,
-        scenario_map: Dict[str, tuple]
-    ) -> Callable:
+    def get_multi_scenario_mock(self, scenario_map: Dict[str, tuple]) -> Callable:
         """
         Create a mock that handles multiple different commands.
 
@@ -415,14 +411,12 @@ class CommandMockPlayer:
                         return MagicMock(
                             stdout=scenario.get("stdout", ""),
                             stderr=scenario.get("stderr", ""),
-                            returncode=scenario.get("returncode", 0)
+                            returncode=scenario.get("returncode", 0),
                         )
 
             # No match found
             return MagicMock(
-                stdout="",
-                stderr=f"Mock not found for command: {cmd_str}",
-                returncode=1
+                stdout="", stderr=f"Mock not found for command: {cmd_str}", returncode=1
             )
 
         return mock_subprocess_run
@@ -430,7 +424,7 @@ class CommandMockPlayer:
     def get_dynamic_mock(
         self,
         mock_file: str,
-        command_to_scenario: Optional[Callable[[List[str]], str]] = None
+        command_to_scenario: Optional[Callable[[List[str]], str]] = None,
     ) -> Callable:
         """
         Create a dynamic mock that determines scenario based on command analysis.
@@ -478,14 +472,14 @@ class CommandMockPlayer:
                 return MagicMock(
                     stdout="",
                     stderr=f"Scenario '{scenario_name}' not found",
-                    returncode=1
+                    returncode=1,
                 )
 
             scenario = scenarios[scenario_name]
             return MagicMock(
                 stdout=scenario.get("stdout", ""),
                 stderr=scenario.get("stderr", ""),
-                returncode=scenario.get("returncode", 0)
+                returncode=scenario.get("returncode", 0),
             )
 
         return mock_subprocess_run

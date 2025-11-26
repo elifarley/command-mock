@@ -88,7 +88,7 @@ class CommandMockRecorder:
                 cwd=temp_dir,
                 check=True,
                 capture_output=True,
-                text=True
+                text=True,
             )
             return temp_dir
         except subprocess.CalledProcessError as e:
@@ -107,7 +107,7 @@ class CommandMockRecorder:
         repo_path: Optional[Path] = None,
         description: str = "",
         template_vars: Optional[Dict[str, str]] = None,
-        output_prefix: str = ""
+        output_prefix: str = "",
     ) -> Dict[str, Any]:
         """
         Execute a command and record its output with template placeholder preservation.
@@ -184,23 +184,22 @@ class CommandMockRecorder:
                 cwd=repo_path,
                 capture_output=True,
                 text=True,
-                check=False  # We want to capture failures too
+                check=False,  # We want to capture failures too
             )
         except UnicodeDecodeError:
             # Binary output - try again without text mode
             try:
-                result = subprocess.run(
-                    command,
-                    cwd=repo_path,
-                    capture_output=True,
-                    check=False
+                result_bytes = subprocess.run(
+                    command, cwd=repo_path, capture_output=True, check=False
                 )
                 # Store binary output as error message
                 result = subprocess.CompletedProcess(
-                    args=result.args,
-                    returncode=result.returncode if result.returncode != 0 else 128,
+                    args=result_bytes.args,
+                    returncode=(
+                        result_bytes.returncode if result_bytes.returncode != 0 else 128
+                    ),
                     stdout="",
-                    stderr="fatal: binary file cannot be processed"
+                    stderr="fatal: binary file cannot be processed",
                 )
             except Exception as e:
                 raise RuntimeError(f"Failed to execute command {command}: {e}") from e
@@ -238,7 +237,7 @@ class CommandMockRecorder:
         self,
         scenarios: List[Dict[str, Any]],
         output_file: Path,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
         """
         Write TOML file with multiple scenarios.
@@ -256,7 +255,7 @@ class CommandMockRecorder:
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         # Build TOML structure
-        toml_data = {}
+        toml_data: Dict[str, Any] = {}
 
         # Add metadata if provided
         if metadata:
@@ -275,7 +274,7 @@ class CommandMockRecorder:
         output_file: Path,
         repo_setup_script: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        output_prefix: str = ""
+        output_prefix: str = "",
     ) -> None:
         """
         Record multiple scenarios at once.
@@ -307,14 +306,14 @@ class CommandMockRecorder:
                     repo_path=repo_path,
                     description=spec.get("description", ""),
                     template_vars=spec.get("template_vars"),
-                    output_prefix=output_prefix
+                    output_prefix=output_prefix,
                 )
                 scenarios.append(scenario)
 
             # Add repo setup to metadata if provided
             if repo_setup_script and metadata is None:
                 metadata = {}
-            if repo_setup_script:
+            if repo_setup_script and metadata is not None:
                 metadata["repo_setup"] = repo_setup_script
 
             # Write TOML file

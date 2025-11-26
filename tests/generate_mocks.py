@@ -16,7 +16,6 @@ Usage:
     python generate_mocks.py
 """
 
-import sys
 from pathlib import Path
 from command_mock.recorder import CommandMockRecorder
 
@@ -30,16 +29,31 @@ def generate_git_log_follow_mocks():
     # Basic scenario - use different repo for follow (which creates project.py)
     scenarios = [
         {
-            "command": ["git", "log", "--follow", "--format=%H|%an|%ai", "--", "{filepath}"],
+            "command": [
+                "git",
+                "log",
+                "--follow",
+                "--format=%H|%an|%ai",
+                "--",
+                "{filepath}",
+            ],
             "scenario_name": "basic",
             "description": "Basic file history without filters",
-            "template_vars": {"filepath": "project.py"}
+            "template_vars": {"filepath": "project.py"},
         },
         {
-            "command": ["git", "log", "--follow", "--format=%H|%an|%ai", "--since={since}", "--", "{filepath}"],
+            "command": [
+                "git",
+                "log",
+                "--follow",
+                "--format=%H|%an|%ai",
+                "--since={since}",
+                "--",
+                "{filepath}",
+            ],
             "scenario_name": "with_since_filter",
             "description": "File history filtered by --since date",
-            "template_vars": {"filepath": "project.py", "since": "2 months ago"}
+            "template_vars": {"filepath": "project.py", "since": "2 months ago"},
         },
     ]
 
@@ -49,9 +63,9 @@ def generate_git_log_follow_mocks():
         repo_setup_script="git/churn-with-since.sh",
         metadata={
             "description": "Mock data for git log --follow (file churn analysis)",
-            "generated_by": "generate_mocks.py"
+            "generated_by": "generate_mocks.py",
         },
-        output_prefix="follow-"
+        output_prefix="follow-",
     )
 
     print("✓ Generated git log --follow mocks")
@@ -68,19 +82,30 @@ def generate_git_log_L_mocks():
             "command": ["git", "log", "-L", "{line_range}:{filepath}", "--oneline"],
             "scenario_name": "basic",
             "description": "Basic line history without filters",
-            "template_vars": {"line_range": "2,2", "filepath": "file.txt"}
+            "template_vars": {"line_range": "2,2", "filepath": "file.txt"},
         },
         {
-            "command": ["git", "log", "-L", "{line_range}:{filepath}", "--oneline", "--since={since}"],
+            "command": [
+                "git",
+                "log",
+                "-L",
+                "{line_range}:{filepath}",
+                "--oneline",
+                "--since={since}",
+            ],
             "scenario_name": "with_since_filter",
             "description": "Line history filtered by --since date",
-            "template_vars": {"line_range": "2,2", "filepath": "file.txt", "since": "1 month ago"}
+            "template_vars": {
+                "line_range": "2,2",
+                "filepath": "file.txt",
+                "since": "1 month ago",
+            },
         },
         {
             "command": ["git", "log", "-L", "{line_range}:{filepath}", "--oneline"],
             "scenario_name": "no_commits",
             "description": "Line that has never been modified (empty result)",
-            "template_vars": {"line_range": "1,1", "filepath": "file.txt"}
+            "template_vars": {"line_range": "1,1", "filepath": "file.txt"},
         },
     ]
 
@@ -90,9 +115,9 @@ def generate_git_log_L_mocks():
         repo_setup_script="git/churn-basic.sh",
         metadata={
             "description": "Mock data for git log -L (line history analysis)",
-            "generated_by": "generate_mocks.py"
+            "generated_by": "generate_mocks.py",
         },
-        output_prefix="L-line-"
+        output_prefix="L-line-",
     )
 
     print("✓ Generated git log -L mocks")
@@ -110,7 +135,7 @@ def generate_binary_file_mocks():
             "command": ["git", "log", "-L", "{line_range}:{filepath}", "--oneline"],
             "scenario_name": "binary_file",
             "description": "Git error when running -L on binary file",
-            "template_vars": {"line_range": "1,1", "filepath": "image.png"}
+            "template_vars": {"line_range": "1,1", "filepath": "image.png"},
         },
     ]
 
@@ -120,9 +145,9 @@ def generate_binary_file_mocks():
         repo_setup_script="git/churn-binary.sh",
         metadata={
             "description": "Mock data for binary file error handling",
-            "generated_by": "generate_mocks.py"
+            "generated_by": "generate_mocks.py",
         },
-        output_prefix="binary-"
+        output_prefix="binary-",
     )
 
     print("✓ Generated binary file error mocks")
@@ -132,7 +157,9 @@ def main():
     """Generate all mock data."""
     print("=== Generating Mock Data for Git Commands ===\n")
     print("Note: This framework repo includes only minimal example mocks.")
-    print("Domain-specific mocks (activity, search) remain in the consuming projects.\n")
+    print(
+        "Domain-specific mocks (activity, search) remain in the consuming projects.\n"
+    )
 
     try:
         generate_git_log_follow_mocks()

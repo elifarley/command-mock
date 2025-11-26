@@ -22,12 +22,12 @@ def pytest_addoption(parser):
         "--regenerate-mocks",
         action="store_true",
         default=False,
-        help="Regenerate mock data from real command calls"
+        help="Regenerate mock data from real command calls",
     )
     parser.addoption(
         "--command-type",
         default="git",
-        help="Command type for mocks (default: git). Examples: git, docker, npm"
+        help="Command type for mocks (default: git). Examples: git, docker, npm",
     )
 
 
