@@ -53,6 +53,48 @@ def test_get_history(command_mock):
     assert len(history) == 5
 ```
 
+---
+
+## Alternatives & Philosophy
+
+The **Command Mock Framework** occupies a specific niche: it applies the **VCR/Record-Replay pattern** (popularized by HTTP tools like `vcrpy`) to **subprocess/CLI calls**.
+
+Here is how it compares to other tools in the Python ecosystem:
+
+### 1. The Direct Competitor: `pytest-subprocess`
+This is the most popular modern library for this task. It allows you to define expected commands and outputs inside your test code.
+*   **pytest-subprocess:** Best for **Code-Driven** testing. Excellent for defining logic flows (e.g., "if command X runs, return exit code 1").
+*   **command-mock:** Best for **Data-Driven** testing. It separates test data (TOML) from test logic. It shines when output is verbose or structured (like `git log` or `docker inspect`) and you want to version-control the exact output snapshot.
+
+### 2. The Standard Library: `unittest.mock`
+The "vanilla" way that this framework was built to replace.
+*   **unittest.mock:** Often leads to brittle tests. You have to manually invent stdout strings, which means your tests might pass while the real app fails because your invented string wasn't quite right.
+*   **command-mock:** Guarantees fidelity by recording reality first.
+
+### 3. "Real Execution" Tools (`cram`, `scripttest`)
+These tools run actual shell commands in a sandbox.
+*   **cram:** Provides 100% realism but is **slow** and requires a full environment setup (installing git, docker, etc. on the test runner).
+*   **command-mock:** Replays instantly (`⚡ Fast`) and requires no external tools installed in the CI environment.
+
+### 4. The HTTP Equivalent: `vcrpy`
+If your CLI tool is primarily a wrapper around an API (e.g., a custom AWS wrapper), you might be mocking the wrong layer.
+*   **Strategy:** Instead of mocking the subprocess call to `aws-cli`, use the Python SDK (`boto3`) and use `vcrpy` to record the HTTP interactions. Use **command-mock** when you must shell out to a binary.
+
+### Summary
+
+| Feature | **command-mock** | **pytest-subprocess** | **unittest.mock** | **cram** |
+| :--- | :--- | :--- | :--- | :--- |
+| **Primary Goal** | High-fidelity Replay | Programmatic Logic | Basic Mocking | Integration Testing |
+| **Data Storage** | External Files (TOML) | In Python Code | In Python Code | Shell Transcript Files |
+| **Realism** | ⭐⭐⭐⭐ (Recorded) | ⭐⭐ (Manual) | ⭐ (Manual) | ⭐⭐⭐⭐⭐ (Real) |
+| **Speed** | ⚡ Fast | ⚡ Fast | ⚡ Fast | 🐢 Slow |
+| **Best For** | Complex outputs | Logic flows, exit codes | Simple commands | End-to-end flows |
+
+**Conclusion:**
+If you need to mock complex tools like **Git**, **Docker**, or **Kubectl** where the stdout is verbose and structured, **command-mock** is the best fit because managing those massive strings inside Python code is messy and error-prone.
+
+---
+
 ## Installation
 
 ```bash
