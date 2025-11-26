@@ -7,11 +7,17 @@ name = "orgecc-command-mock"
 dynamic = ["version"]
 authors = [{ name = "Hug SCM Team" }]
 description = "High-fidelity command mocking framework"
+readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
     "tomli>=2.0.0; python_version < '3.11'",
     "tomli-w>=1.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/elifarley/command-mock"
+Repository = "https://github.com/elifarley/command-mock"
+Issues = "https://github.com/elifarley/command-mock/issues"
 
 [project.optional-dependencies]
 test = [
