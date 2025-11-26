@@ -9,6 +9,32 @@ authors = [{ name = "Hug SCM Team" }]
 description = "High-fidelity command mocking framework"
 readme = "README.md"
 requires-python = ">=3.8"
+keywords = [
+    "testing",
+    "mocking",
+    "subprocess",
+    "cli",
+    "shell",
+    "command-line",
+    "record-replay",
+    "vcr",
+    "snapshot-testing",
+    "pytest",
+    "git",
+    "docker",
+    "deterministic",
+    "integration-testing"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Testing :: Mocking",
+    "Topic :: Software Development :: Quality Assurance",
+    "Framework :: Pytest",
+    "Typing :: Typed",
+    "Programming Language :: Python :: 3",
+]
 dependencies = [
     "tomli>=2.0.0; python_version < '3.11'",
     "tomli-w>=1.0.0",

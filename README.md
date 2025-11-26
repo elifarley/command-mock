@@ -18,10 +18,12 @@ Testing code that wraps CLI tools (Git, Docker, Kubectl, npm) is painful.
 
 ## The Solution
 
-**Command Mock Framework** sits between your code and `subprocess`.
+**Command Mock Framework** is a VCR-style library for `subprocess.run`. It sits between your code and `subprocess`.
 1. **Record** real command outputs to TOML files.
 2. **Replay** them instantly in tests.
 3. **Match** commands flexibly using template placeholders.
+
+Easily mock complex tools like **AWS CLI**, **Kubectl**, **Terraform**, and **Git** without manually constructing stdout strings.
 
 ### Quick Example
 
@@ -58,6 +60,8 @@ def test_get_history(command_mock):
 ## Alternatives & Philosophy
 
 The **Command Mock Framework** occupies a specific niche: it applies the **VCR/Record-Replay pattern** (popularized by HTTP tools like `vcrpy`) to **subprocess/CLI calls**.
+
+**Stop using `unittest.mock.patch` with fake stdout strings.** This framework guarantees fidelity by recording reality first.
 
 Here is how it compares to other tools in the Python ecosystem:
 
