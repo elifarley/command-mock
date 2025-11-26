@@ -25,12 +25,14 @@ COV_HTML  := htmlcov
 # If HATCH is available, we use it for running commands to ensure isolation.
 # Otherwise, we fall back to the local python environment.
 ifeq (, $(shell command -v $(HATCH) 2> /dev/null))
-    # Hatch not found
+    # Hatch not found - use local python
     RUNNER := $(PY) -m
+    PYTHON_CMD := $(PY)
     BUILD_CMD := $(PY) -m build
 else
-    # Hatch found
+    # Hatch found - use hatch environment
     RUNNER := $(HATCH) run
+    PYTHON_CMD := $(HATCH) run python
     BUILD_CMD := $(HATCH) build
 endif
 
@@ -61,6 +63,10 @@ Targets:
     test-case       Run specific test case (K=pattern)
     coverage-open   Open coverage HTML report
 
+    # Release
+    version         Show current project version (calculated from git)
+    release         Create and push a new release tag (V=x.y.z)
+
     # Build & Dist
     build           Build wheel + sdist (clean first)
     clean           Remove all build artifacts and __pycache__
@@ -71,7 +77,7 @@ Targets:
 endef
 export HELP_MESSAGE
 
-.PHONY: help install dev format check-format lint test quick test-file test-case coverage-open build wheel sdist docs clean distclean ci
+.PHONY: help install dev format check-format lint test quick test-file test-case coverage-open build wheel sdist docs clean distclean ci release version
 
 .DEFAULT_GOAL := help
 
@@ -120,7 +126,15 @@ test-case: ## Run specific test case (K=pattern)
 	$(RUNNER) $(PYTEST) $(PYTEST_ARGS) -k "$(K)" $(ARGS)
 
 coverage-open:
-	@$(PY) -c "import webbrowser, os; f = os.path.join(os.getcwd(), '$(COV_HTML)', 'index.html'); print('Opening:', f); webbrowser.open('file://' + f) if os.path.exists(f) else print('Run make test first.')"
+	@$(PYTHON_CMD) -c "import webbrowser, os; f = os.path.join(os.getcwd(), '$(COV_HTML)', 'index.html'); print('Opening:', f); webbrowser.open('file://' + f) if os.path.exists(f) else print('Run make test first.')"
+
+# ---------- Release ----------
+version v: ## Show current project version
+	@$(PYTHON_CMD) -m setuptools_scm
+
+release: ## Create and push a new release tag
+	@chmod +x scripts/release.sh
+	@./scripts/release.sh $(V)
 
 # ---------- Build & Docs ----------
 build: ## Build dists
