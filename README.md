@@ -184,6 +184,23 @@ command = ["git", "add", "{filepath}"]
 **Dynamic Flag Stripping:**
 The player automatically handles flags that change every run (like `--since="1 hour ago"`), matching the core command while ignoring the dynamic parts.
 
+---
+
+## Real-World Example: Hug SCM
+
+This framework was extracted from [**Hug SCM**](https://github.com/elifarley/hug-scm), a humane Git interface. Hug SCM relies on this library to test its complex Git history analysis features without needing a Git repo in CI.
+
+You can explore Hug SCM's source code to see the framework in action:
+
+| Component | File in Hug SCM | Purpose |
+| :--- | :--- | :--- |
+| **Integration** | [`tests/conftest.py`](https://github.com/elifarley/hug-scm/blob/main/git-config/lib/python/tests/conftest.py) | Shows how to configure the `command_mock` fixture to point to a local `fixtures/` directory. |
+| **Recording** | [`tests/fixtures/generate_mocks.py`](https://github.com/elifarley/hug-scm/blob/main/git-config/lib/python/tests/fixtures/generate_mocks.py) | A robust script that generates 50+ mocks for `git log`, `churn`, and `activity` analysis. Demonstrates batch recording. |
+| **Data** | [`tests/fixtures/mocks/git/log/`](https://github.com/elifarley/hug-scm/tree/main/git-config/lib/python/tests/fixtures/mocks/git/log) | See how real TOML mock files are structured and organized by command. |
+| **Tests** | [`tests/test_activity.py`](https://github.com/elifarley/hug-scm/blob/main/git-config/lib/python/tests/test_activity.py) | See how tests consume these mocks to validate complex logic like "weekend work detection". |
+
+---
+
 ## Development
 
 This project uses a Makefile for all development tasks.
