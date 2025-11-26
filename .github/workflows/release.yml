@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "v*.*.*"  # Trigger on tags like v0.1.0, v1.0.0-rc1
+      - "*.*.*"  # Trigger on tags like 0.1.0, 1.0.0, 0.1.0-rc1
 
 jobs:
   # 1. Verify code health before release
