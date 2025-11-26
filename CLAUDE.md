@@ -112,16 +112,9 @@ Output files stored separately: `tests/mocks/<command_type>/<path>/outputs/<name
 
 **Tag Format:** Semver without `v` prefix (e.g., `0.1.0`, `0.1.1`, `1.0.0`)
 
-**Trigger Release (GitHub Actions):**
-1. Commit changes to main branch
-2. Create and push a tag: `git tag 0.1.2 && git push origin 0.1.2`
-3. GitHub Actions automatically:
-   - Runs full test suite (Python 3.12 & 3.13)
-   - Builds distributions (setuptools_scm injects version from tag)
-   - Publishes to PyPI (using Trusted Publishing / OIDC)
-   - Creates GitHub Release with auto-generated notes
+Releases are triggered by pushing git tags matching `*.*.*` pattern. The workflow automatically runs tests, builds distributions, publishes to PyPI via Trusted Publishing (OIDC), and creates GitHub Releases.
 
-**Workflow File:** `.github/workflows/release.yml` (triggered on `push:tags:["*.*.*"]`)
+For detailed release instructions and troubleshooting, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## CI/CD
 
