@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "setuptools_scm>=8.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "orgecc-command-mock"
-version = "0.1.0"
+dynamic = ["version"]
 authors = [{ name = "Hug SCM Team" }]
 description = "High-fidelity command mocking framework"
 requires-python = ">=3.8"
@@ -24,7 +24,12 @@ dev = [
     "mypy>=1.0.0",
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
+    "build>=1.0.0",
 ]
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "node-and-date"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

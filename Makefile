@@ -62,7 +62,7 @@ Targets:
     coverage-open   Open coverage HTML report
 
     # Build & Dist
-    build           Build wheel + sdist
+    build           Build wheel + sdist (clean first)
     clean           Remove all build artifacts and __pycache__
     distclean       Aggressive clean (includes tool caches)
 
